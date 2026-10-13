@@ -15,7 +15,7 @@ jobs:
       - name: Compile Python sources
         run: python -m compileall -q edgevision scripts tests
       - name: Test
-        run: pytest -q
+        run: python -m pytest -q
       - name: Exercise perception pipeline
         run: edgevision smoke --frames 90 --output artifacts/synthetic-smoke.json --image artifacts/last-frame.jpg
       - name: Confirm actual event output

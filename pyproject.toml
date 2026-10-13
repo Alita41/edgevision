@@ -22,8 +22,14 @@ test = ["pytest>=8,<10", "httpx>=0.25,<1"]
 [project.scripts]
 edgevision = "edgevision.cli:main"
 
+[tool.setuptools.packages.find]
+where = ["."]
+include = ["edgevision*"]
+namespaces = false
+
 [tool.setuptools.package-data]
 edgevision = ["web/*"]
 
 [tool.pytest.ini_options]
 testpaths = ["tests"]
+pythonpath = ["."]
