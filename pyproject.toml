@@ -1,0 +1,29 @@
+[build-system]
+requires = ["setuptools>=68", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "edgevision-perception"
+version = "1.0.0"
+description = "Edge-first, uncertainty-aware visual perception and event monitoring"
+requires-python = ">=3.10"
+dependencies = [
+  "numpy>=1.24,<3",
+  "opencv-python-headless>=4.8,<5",
+  "fastapi>=0.110,<1",
+  "uvicorn>=0.29,<1",
+]
+
+[project.optional-dependencies]
+tflite = ["tflite-runtime>=2.14; platform_machine=='aarch64'"]
+train = ["tensorflow>=2.15,<3", "scikit-learn>=1.3,<2", "Pillow>=10,<12"]
+test = ["pytest>=8,<10", "httpx>=0.25,<1"]
+
+[project.scripts]
+edgevision = "edgevision.cli:main"
+
+[tool.setuptools.package-data]
+edgevision = ["web/*"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]

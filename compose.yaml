@@ -1,0 +1,13 @@
+services:
+  edgevision:
+    build: .
+    ports:
+      - "127.0.0.1:8080:8080"
+    volumes:
+      - edgevision_events:/app/data
+    restart: unless-stopped
+    read_only: true
+    tmpfs:
+      - /tmp
+volumes:
+  edgevision_events:

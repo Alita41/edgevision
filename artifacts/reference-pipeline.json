@@ -1,0 +1,22 @@
+{
+  "type": "synthetic computational benchmark; NOT a traffic-sign accuracy/FPS-on-Raspberry-Pi claim",
+  "backend": "color-shape candidate proposals, no neural model",
+  "frames": 180,
+  "width": 960,
+  "height": 540,
+  "elapsed_seconds": 1.339,
+  "throughput_fps": 134.4,
+  "processing_ms": {
+    "mean": 3.763,
+    "p50": 3.558,
+    "p95": 4.938,
+    "p99": 6.052
+  },
+  "events": 1,
+  "environment": {
+    "machine": "x86_64",
+    "cpu_count": 5,
+    "python": "3.13.5",
+    "opencv": "4.13.0"
+  }
+}

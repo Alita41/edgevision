@@ -1,0 +1,14 @@
+{
+  "proposal_min_area": 180,
+  "proposal_max_area_fraction": 0.2,
+  "proposal_min_fill": 0.24,
+  "confidence_threshold": 0.7,
+  "margin_threshold": 0.13,
+  "min_track_hits": 3,
+  "track_max_misses": 6,
+  "match_iou_threshold": 0.18,
+  "alert_cooldown_s": 8.0,
+  "queue_capacity": 2,
+  "max_event_rows": 10000,
+  "jpeg_quality": 77
+}

@@ -1,0 +1,65 @@
+{
+  "mode": "heuristic demo",
+  "model": "heuristic-candidates (no ML model)",
+  "frames": 100,
+  "events": 1,
+  "active_tracks": 1,
+  "confirmed_tracks": 1,
+  "throughput_fps": 24.0,
+  "processing_ms_p50": 3.71,
+  "processing_ms_p95": 5.8,
+  "processing_ms_mean": 3.97,
+  "detections": [
+    {
+      "id": 1,
+      "box": [
+        244,
+        199,
+        340,
+        295
+      ],
+      "label": "red sign-like candidate",
+      "confidence": 0.9811,
+      "hits": 100,
+      "confirmed": true,
+      "abstained": false,
+      "age_s": 4.125
+    }
+  ],
+  "config": {
+    "proposal_min_area": 180,
+    "proposal_max_area_fraction": 0.2,
+    "proposal_min_fill": 0.24,
+    "confidence_threshold": 0.7,
+    "margin_threshold": 0.13,
+    "min_track_hits": 3,
+    "track_max_misses": 6,
+    "match_iou_threshold": 0.18,
+    "alert_cooldown_s": 8.0,
+    "queue_capacity": 2,
+    "max_event_rows": 10000,
+    "jpeg_quality": 77
+  },
+  "source": "synthetic-demo",
+  "benchmark_type": "synthetic-smoke-not-model-accuracy",
+  "events_sample": [
+    {
+      "id": 1,
+      "track_id": 1,
+      "label": "red sign-like candidate",
+      "confidence": 0.9811,
+      "severity": "observation",
+      "first_seen": 1730000000.0,
+      "confirmed_at": 1730000000.0833333,
+      "bbox": [
+        246,
+        184,
+        342,
+        280
+      ],
+      "source": "heuristic-candidates (no ML model)",
+      "model_version": "heuristic-candidates (no ML model)",
+      "pipeline_version": "1.0.0"
+    }
+  ]
+}

@@ -1,0 +1,81 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#0b1017">
+  <meta name="description" content="EdgeVision local-first computer vision observation console with temporal tracking and auditable detections.">
+  <title>EdgeVision / Perception Console</title>
+  <link rel="icon" href="/favicon.svg" type="image/svg+xml">
+  <link rel="stylesheet" href="/style.css">
+</head>
+<body>
+<div class="app-shell">
+  <aside class="sidebar" aria-label="Site navigation">
+    <a href="#overview" class="brand" aria-label="EdgeVision console home"><span class="brand-icon" aria-hidden="true"><span></span><span></span></span><span>EDGE<span class="brand-light">VISION</span><small>PERCEPTION SYSTEMS</small></span></a>
+    <div class="side-divider"></div>
+    <span class="side-label">WORKSPACE</span>
+    <nav class="nav-stack" aria-label="Main sections">
+      <a class="nav-active" href="#overview"><span class="nav-icon">⌗</span> Overview <span class="nav-arrow">↗</span></a>
+      <a href="#live-feed"><span class="nav-icon">◉</span> Live perception</a>
+      <a href="#events"><span class="nav-icon">▤</span> Event history</a>
+      <a href="#controls"><span class="nav-icon">≡</span> Runtime controls</a>
+    </nav>
+    <div class="sidebar-bottom">
+      <div class="side-system"><div class="pulse"></div><span>ON-DEVICE PROCESSING<small>Frames remain local by default</small></span></div>
+      <div class="side-bottom-row"><span>EDGEVISION 1.0</span><a href="https://github.com/Alita41" rel="noopener noreferrer" target="_blank">GITHUB ↗</a></div>
+    </div>
+  </aside>
+  <div class="main-area" id="overview">
+    <header class="topbar">
+      <div class="breadcrumbs"><span>WORKSPACE</span><span class="sep">/</span><strong>OVERVIEW</strong></div>
+      <div class="topbar-right"><span class="top-clock" id="clock">--:--:--</span><span class="header-divider"></span><span class="live-badge"><span class="live-dot"></span><span id="health-tag">INITIALIZING</span></span></div>
+    </header>
+    <main class="workspace">
+      <section class="welcome">
+        <div><div class="eyebrow"><span class="eyebrow-line"></span> INTELLIGENT EDGE MONITORING <span class="eyebrow-id">/ CONSOLE 01</span></div>
+          <h1>See what matters.<br><em>Know when it matters.</em></h1>
+          <p>Live visual perception, temporal validation, and auditable signals — engineered to run close to the camera.</p>
+          <div class="welcome-actions"><a class="primary-action" href="#live-feed">Explore live feed <span>↗</span></a><a class="quiet-action" href="#events">Review detections <span>→</span></a></div>
+        </div>
+        <div class="signal-graphic" aria-hidden="true"><div class="signal-grid"></div><div class="signal-ring ring-outer"></div><div class="signal-ring ring-mid"></div><div class="signal-ring ring-inner"></div><span class="signal-center"><span class="signal-dot"></span></span><span class="signal-label label-one">VISION / ACTIVE</span><span class="signal-label label-two">TRACK / VALIDATE</span><span class="signal-cross cross-a">+</span><span class="signal-cross cross-b">+</span></div>
+      </section>
+      <section class="metrics" aria-label="Live system telemetry">
+        <div class="metric"><div class="metric-top">THROUGHPUT <span>↗</span></div><div class="metric-main"><span id="fps">—</span><small>FPS</small></div><div class="metric-sub">Processed frames / second</div><div class="metric-line"><span class="line-accent"></span></div></div>
+        <div class="metric"><div class="metric-top">INFERENCE LATENCY <span>◷</span></div><div class="metric-main"><span id="latency">—</span><small>MS P95</small></div><div class="metric-sub">End-to-end frame processing</div><div class="metric-line"><span></span></div></div>
+        <div class="metric"><div class="metric-top">ACTIVE TRACKS <span>◎</span></div><div class="metric-main"><span id="tracks">—</span><small>LIVE</small></div><div class="metric-sub">Temporal object identities</div><div class="metric-line"><span></span></div></div>
+        <div class="metric"><div class="metric-top">EVENT LOG <span>▤</span></div><div class="metric-main"><span id="event-count">—</span><small>TOTAL</small></div><div class="metric-sub">Locally retained metadata</div><div class="metric-line"><span></span></div></div>
+      </section>
+      <div class="content-grid">
+        <section class="panel stream-panel" id="live-feed" aria-label="Live perception feed">
+          <div class="panel-head"><div><span class="section-index">01 / LIVE PERCEPTION</span><h2>Camera intelligence</h2></div><span class="mode-badge" id="mode-badge">DEMO MODE</span></div>
+          <div class="screen"><img id="live-image" src="/stream.mjpg" alt="Local computer vision feed showing live tracking overlays" loading="eager"><span class="camera-top-left"><span class="tiny-red"></span> LIVE / <span id="source-tag">SYNTHETIC</span></span><span class="camera-top-right">EDGE V 1.0<span class="corner-icon">◢</span></span><div class="screen-corner corner-tl"></div><div class="screen-corner corner-tr"></div><div class="screen-corner corner-bl"></div><div class="screen-corner corner-br"></div></div>
+          <div class="screen-foot"><span><span class="small-dot"></span> <span id="source-detail">Awaiting source...</span></span><span id="frame-label">FRAME —</span></div>
+          <div class="notice"><span class="notice-icon">ⓘ</span><span id="model-warning"><strong>Simulation mode.</strong> The visual demo finds colored, sign-like shapes. Semantic traffic-sign recognition requires a separately trained TFLite model.</span></div>
+        </section>
+        <section class="panel evidence-panel" id="events" aria-label="Event history">
+          <div class="panel-head"><div><span class="section-index">02 / EVENT INTELLIGENCE</span><h2>Verified observations</h2></div><span class="count-pill" id="event-pill">0 EVENTS</span></div>
+          <div class="evidence-intro">Detections enter the log only after temporal confirmation. Uncertain neural predictions are suppressed.</div>
+          <div class="event-items" id="event-list" aria-live="polite"><div class="empty-state"><span class="empty-mark">⌁</span><strong>Waiting for verified events</strong><p>Confirmed observations will appear here automatically.</p></div></div>
+          <div class="events-footer"><span>LOCAL EVENT LEDGER</span><span>SQLITE / NO FRAME STORAGE</span></div>
+        </section>
+      </div>
+      <section class="second-row" id="controls">
+        <div class="panel control-panel"><div class="panel-head"><div><span class="section-index">03 / OPERATOR CONTROLS</span><h2>Signal quality</h2></div><span class="tag-outline">LIVE CONFIG</span></div>
+          <p class="control-caption">Adjust your alert thresholds while the pipeline runs. Changes apply to new observations; hardware/model calibration is still required for deployment.</p>
+          <div class="range-group"><div class="range-head"><label for="conf">Classification threshold</label><output id="conf-out">70%</output></div><input type="range" id="conf" min="30" max="99" value="70"><div class="range-labels"><span>MORE SENSITIVE</span><span>MORE SELECTIVE</span></div></div>
+          <div class="range-group"><div class="range-head"><label for="hits">Temporal confirmation</label><output id="hits-out">3 FRAMES</output></div><input type="range" id="hits" min="1" max="12" value="3"><div class="range-labels"><span>FASTER RESPONSE</span><span>FEWER FALSE ALERTS</span></div></div>
+          <div class="control-actions"><button id="apply" type="button">Apply thresholds <span>↗</span></button><span id="save-msg" role="status"></span></div>
+        </div>
+        <div class="panel integrity-panel"><div class="panel-head"><div><span class="section-index">04 / ENGINE HEALTH</span><h2>Runtime integrity</h2></div><span class="tag-outline">LOCAL FIRST</span></div>
+          <div class="health-rows"><div><span>Runtime</span><strong id="health">BOOTING</strong></div><div><span>Execution mode</span><strong id="runtime-mode">DEMO</strong></div><div><span>Frames captured</span><strong id="captured">0</strong></div><div><span>Frames dropped</span><strong id="dropped">0</strong></div><div><span>Queue depth</span><strong id="queue">0</strong></div><div><span>Median processing</span><strong id="median">—</strong></div></div>
+          <div class="privacy-note"><span class="privacy-symbol">⌁</span><div><strong>Built for private, accountable perception.</strong><p>Video stays in volatile memory. Only structured observation metadata is saved locally by default.</p></div></div>
+        </div>
+      </section>
+      <footer class="footer"><span>© 2026 EDGEVISION  /  BUILT BY TALAT ZEHRA ALI</span><span>COMPUTER VISION <span class="foot-sep">·</span> EDGE SYSTEMS <span class="foot-sep">·</span> RESPONSIBLE AI</span></footer>
+    </main>
+  </div>
+</div>
+<script src="/app.js" defer></script>
+</body>
+</html>

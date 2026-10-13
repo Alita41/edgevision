@@ -1,0 +1,29 @@
+name: CI
+on:
+  push:
+  pull_request:
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Install application and test dependencies
+        run: pip install -e '.[test]'
+      - name: Compile Python sources
+        run: python -m compileall -q edgevision scripts tests
+      - name: Test
+        run: pytest -q
+      - name: Exercise perception pipeline
+        run: edgevision smoke --frames 90 --output artifacts/synthetic-smoke.json --image artifacts/last-frame.jpg
+      - name: Confirm actual event output
+        run: |
+          python - <<'PY'
+          import json
+          a = json.load(open('artifacts/synthetic-smoke.json'))
+          assert a['frames'] == 90
+          assert a['events'] >= 1
+          assert a['mode'] == 'heuristic demo'
+          PY

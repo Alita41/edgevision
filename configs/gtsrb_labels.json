@@ -1,0 +1,16 @@
+{
+  "dataset": "German Traffic Sign Recognition Benchmark (GTSRB)",
+  "task": "43-way traffic-sign crop classification; not scene-level detection",
+  "labels": [
+    "speed limit 20 km/h", "speed limit 30 km/h", "speed limit 50 km/h", "speed limit 60 km/h",
+    "speed limit 70 km/h", "speed limit 80 km/h", "end of speed limit 80 km/h", "speed limit 100 km/h",
+    "speed limit 120 km/h", "no passing", "no passing for vehicles over 3.5t", "priority at next intersection",
+    "priority road", "yield", "stop", "no vehicles", "vehicles over 3.5t prohibited", "no entry",
+    "general caution", "dangerous curve left", "dangerous curve right", "double curve", "bumpy road",
+    "slippery road", "road narrows on right", "road work", "traffic signals", "pedestrians",
+    "children crossing", "bicycles crossing", "beware of ice or snow", "wild animals crossing",
+    "end of all speed and passing limits", "turn right ahead", "turn left ahead", "ahead only",
+    "go straight or right", "go straight or left", "keep right", "keep left", "roundabout mandatory",
+    "end of no passing", "end of no passing by vehicles over 3.5t"
+  ]
+}
