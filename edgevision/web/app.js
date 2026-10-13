@@ -1,68 +1,161 @@
-const $=(id)=>document.getElementById(id);
-const pretty=(x)=>Number(x).toLocaleString();
-const label=(x)=>String(x||'').replace(/^./,c=>c.toUpperCase());
-const text=(id,value)=>{if($(id))$(id).textContent=String(value)};
-const clock=()=>text('clock',new Date().toLocaleTimeString('en-GB',{hour12:false}));
-clock();setInterval(clock,1000);
-let configLoaded=false;
-let running=true;
-let previousEvents='';
+const byId = (id) => document.getElementById(id);
+const number = (value) => Number(value).toLocaleString();
 
-async function getJson(url,opts){const r=await fetch(url,{cache:'no-store',...opts});if(!r.ok)throw new Error('HTTP '+r.status);return r.json()}
-function eventNode(item){
- const el=document.createElement('div');el.className='event-item';
- const icon=document.createElement('span');icon.className='event-icon';icon.textContent='⌗';
- const body=document.createElement('div');body.className='event-content';
- const title=document.createElement('div');title.className='event-title';title.textContent=label(item.label);
- const meta=document.createElement('div');meta.className='event-meta';
- const stamp=document.createElement('span');stamp.textContent=new Date(item.confirmed_at*1000).toLocaleTimeString();
- const tr=document.createElement('span');tr.textContent=`TRACK #${String(item.track_id).padStart(3,'0')}`;
- const src=document.createElement('span');src.textContent=item.source.includes('heuristic')?'HEURISTIC CANDIDATE':`${Math.round(item.confidence*100)}% MODEL CONF.`;
- meta.append(stamp,tr,src);body.append(title,meta);
- const pill=document.createElement('span');pill.className='severity '+item.severity;pill.textContent=item.severity;
- el.append(icon,body,pill);return el;
+function setText(id, value) {
+  const element = byId(id);
+  if (element) element.textContent = String(value);
 }
-async function updateEvents(){
- const j=await getJson('/api/v1/events?limit=15');
- text('event-pill',pretty(j.total)+' EVENTS');
- const key=JSON.stringify(j.events.map(x=>x.id));
- if(key===previousEvents)return;previousEvents=key;
- const root=$('event-list');root.replaceChildren();
- if(!j.events.length){
-  const empty=document.createElement('div');empty.className='empty-state';
-  empty.innerHTML='<span class="empty-mark">⌁</span><strong>Waiting for verified events</strong><p>Confirmed observations will appear here automatically.</p>';
-  root.append(empty);
- } else j.events.forEach(e=>root.append(eventNode(e)));
+
+function updateClock() {
+  setText('clock', new Date().toLocaleTimeString('en-GB', { hour12: false }));
 }
-async function updateTelemetry(){
- try{
-  const s=await getJson('/api/v1/telemetry');
-  running=!s.error;
-  text('fps',s.throughput_fps.toFixed(1));text('latency',s.processing_ms_p95.toFixed(1));
-  text('tracks',pretty(s.active_tracks));text('event-count',pretty(s.events));
-  text('frame-label','FRAME '+String(s.frames).padStart(6,'0'));
-  text('source-tag',s.source.toUpperCase());text('source-detail',s.source);
-  text('captured',pretty(s.captured_frames));text('dropped',pretty(s.dropped_frames));
-  text('queue',pretty(s.queue_depth));text('median',s.processing_ms_p50.toFixed(2)+' ms');
-  text('health',s.error?'DEGRADED':s.stream_ended?'SOURCE ENDED':'OPERATIONAL');
-  text('health-tag',s.error?'DEGRADED':s.stream_ended?'SOURCE ENDED':'LOCAL / ACTIVE');
-  text('runtime-mode',s.mode==='heuristic demo'?'CANDIDATE DEMO':'TFLITE INFERENCE');
-  text('mode-badge',s.mode==='heuristic demo'?'HEURISTIC DEMO':'TFLITE MODEL');
-  if(s.mode!=='heuristic demo'){
-    $('model-warning').textContent='TFLite model active. Low-confidence or ambiguous classifications are withheld from verified alerts. Model performance depends on your training and calibration.';
+
+async function requestJson(url, options = {}) {
+  const response = await fetch(url, { cache: 'no-store', ...options });
+  if (!response.ok) throw new Error(`HTTP ${response.status}`);
+  return response.json();
+}
+
+function makeEventNode(event) {
+  const row = document.createElement('div');
+  row.className = 'event-item';
+
+  const icon = document.createElement('span');
+  icon.className = 'event-icon';
+  icon.textContent = '⌗';
+
+  const content = document.createElement('div');
+  content.className = 'event-content';
+
+  const title = document.createElement('div');
+  title.className = 'event-title';
+  const name = String(event.label ?? 'unknown');
+  title.textContent = name.charAt(0).toUpperCase() + name.slice(1);
+
+  const metadata = document.createElement('div');
+  metadata.className = 'event-meta';
+  const timestamp = document.createElement('span');
+  timestamp.textContent = new Date(event.confirmed_at * 1000).toLocaleTimeString();
+  const track = document.createElement('span');
+  track.textContent = `TRACK #${String(event.track_id).padStart(3, '0')}`;
+  const source = document.createElement('span');
+  source.textContent = String(event.source ?? '').includes('heuristic')
+    ? 'HEURISTIC CANDIDATE'
+    : `${Math.round(Number(event.confidence) * 100)}% MODEL CONF.`;
+  metadata.append(timestamp, track, source);
+  content.append(title, metadata);
+
+  const severity = document.createElement('span');
+  severity.className = `severity ${event.severity}`;
+  severity.textContent = event.severity;
+  row.append(icon, content, severity);
+  return row;
+}
+
+let previousEventIds = '';
+let initialSettingsLoaded = false;
+
+async function updateEvents() {
+  const payload = await requestJson('/api/v1/events?limit=15');
+  setText('event-pill', `${number(payload.total)} EVENTS`);
+
+  const ids = JSON.stringify(payload.events.map((event) => event.id));
+  if (ids === previousEventIds) return;
+  previousEventIds = ids;
+
+  const container = byId('event-list');
+  container.replaceChildren();
+  if (payload.events.length) {
+    payload.events.forEach((event) => container.append(makeEventNode(event)));
+    return;
   }
-  if(!configLoaded){$('conf').value=Math.round(s.config.confidence_threshold*100);$('hits').value=s.config.min_track_hits;changeLabels();configLoaded=true}
-  await updateEvents();
- }catch(error){text('health','API UNAVAILABLE');text('health-tag','OFFLINE');console.warn('EdgeVision telemetry:',error.message)}
+
+  const empty = document.createElement('div');
+  empty.className = 'empty-state';
+  empty.innerHTML = '<span class="empty-mark">⌁</span><strong>Waiting for verified events</strong><p>Confirmed observations will appear here automatically.</p>';
+  container.append(empty);
 }
-function changeLabels(){text('conf-out',$('conf').value+'%');text('hits-out',$('hits').value+' FRAMES')}
-$('conf').addEventListener('input',changeLabels);$('hits').addEventListener('input',changeLabels);
-$('apply').addEventListener('click',async()=>{
- const btn=$('apply');btn.disabled=true;text('save-msg','Applying…');
- try{await getJson('/api/v1/config',{method:'PATCH',headers:{'Content-Type':'application/json'},body:JSON.stringify({confidence_threshold:Number($('conf').value)/100,min_track_hits:Number($('hits').value)})});text('save-msg','✓ Saved to live runtime')}
- catch(e){text('save-msg','Could not save · '+e.message)}
- finally{btn.disabled=false}
+
+function updateControlLabels() {
+  setText('conf-out', `${byId('conf').value}%`);
+  setText('hits-out', `${byId('hits').value} FRAMES`);
+}
+
+async function updateTelemetry() {
+  try {
+    const data = await requestJson('/api/v1/telemetry');
+    setText('fps', data.throughput_fps.toFixed(1));
+    setText('latency', data.processing_ms_p95.toFixed(1));
+    setText('tracks', number(data.active_tracks));
+    setText('event-count', number(data.events));
+    setText('frame-label', `FRAME ${String(data.frames).padStart(6, '0')}`);
+    setText('source-tag', data.source.toUpperCase());
+    setText('source-detail', data.source);
+    setText('captured', number(data.captured_frames));
+    setText('dropped', number(data.dropped_frames));
+    setText('queue', number(data.queue_depth));
+    setText('median', `${data.processing_ms_p50.toFixed(2)} ms`);
+
+    const health = data.error ? 'DEGRADED' : data.stream_ended ? 'SOURCE ENDED' : 'OPERATIONAL';
+    setText('health', health);
+    setText('health-tag', data.error ? 'DEGRADED' : data.stream_ended ? 'SOURCE ENDED' : 'LOCAL / ACTIVE');
+
+    const demo = data.mode === 'heuristic demo';
+    setText('runtime-mode', demo ? 'CANDIDATE DEMO' : 'TFLITE INFERENCE');
+    setText('mode-badge', demo ? 'HEURISTIC DEMO' : 'TFLITE MODEL');
+    if (!demo) {
+      setText('model-warning', 'TFLite model active. Low-confidence or ambiguous classifications are withheld from verified alerts. Model performance depends on your training and calibration.');
+    }
+
+    if (!initialSettingsLoaded) {
+      byId('conf').value = Math.round(data.config.confidence_threshold * 100);
+      byId('hits').value = data.config.min_track_hits;
+      updateControlLabels();
+      initialSettingsLoaded = true;
+    }
+    await updateEvents();
+  } catch (error) {
+    setText('health', 'API UNAVAILABLE');
+    setText('health-tag', 'OFFLINE');
+    console.warn('EdgeVision telemetry:', error.message);
+  }
+}
+
+async function applySettings() {
+  const button = byId('apply');
+  button.disabled = true;
+  setText('save-msg', 'Applying…');
+
+  try {
+    await requestJson('/api/v1/config', {
+      method: 'PATCH',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        confidence_threshold: Number(byId('conf').value) / 100,
+        min_track_hits: Number(byId('hits').value),
+      }),
+    });
+    setText('save-msg', '✓ Saved to live runtime');
+  } catch (error) {
+    setText('save-msg', `Could not save · ${error.message}`);
+  } finally {
+    button.disabled = false;
+  }
+}
+
+const navigation = Array.from(document.querySelectorAll('.nav-stack a'));
+navigation.forEach((link) => {
+  link.addEventListener('click', () => {
+    navigation.forEach((item) => item.classList.remove('nav-active'));
+    link.classList.add('nav-active');
+  });
 });
-const navLinks=Array.from(document.querySelectorAll('.nav-stack a'));
-navLinks.forEach(link=>link.addEventListener('click',()=>{navLinks.forEach(x=>x.classList.remove('nav-active'));link.classList.add('nav-active')}));
-updateTelemetry();setInterval(updateTelemetry,1250);
+
+byId('conf').addEventListener('input', updateControlLabels);
+byId('hits').addEventListener('input', updateControlLabels);
+byId('apply').addEventListener('click', applySettings);
+
+updateClock();
+setInterval(updateClock, 1000);
+updateTelemetry();
+setInterval(updateTelemetry, 1250);
